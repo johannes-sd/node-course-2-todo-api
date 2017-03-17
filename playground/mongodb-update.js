@@ -38,5 +38,8 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db) => {
         console.log(result);
     });
 
+// CRUD create, read, update and delete
+
+
     //db.close();
  });
