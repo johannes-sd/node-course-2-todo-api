@@ -1,28 +1,51 @@
-var mongoose = require("mongoose");
+var express = require("express");
+var bodyParser = require("body-parser");
 
-mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/TodoApp");
+var {mongoose} = require("./db/mongoose");
+var {Todo} = require("./models/todo");
+var {User} = require("./models/user");
 
-var Todo = mongoose.model('Todo', {
-    text: {
-        type: String
-    },
-    completed: {
-        type: Boolean
-    },
-    completetAt: {
-        type: Number
-    }
+var app = express();
+
+app.use(bodyParser.json());
+
+app.post('/todos', (req, res) =>{
+    var todo = new Todo({
+        text: req.body.text
+    });
+    todo.save().then((doc)=>{
+        res.send(doc);
+    },(e)=>{
+        res.status(400).send(e);
+    });
 });
 
-var anotherTodo = new Todo({
-    {text: 'ta toget'},
- {completet: false},
- {completedAt: 000000}
+app.listen(3000, () =>{
+    console.log("Startet på port 3000");
 });
 
-anotherTodo.save().then((doc)=>{
-    console.log("saved todo", doc);
-}, (e)=>{
-    console.log("Unable to save object todo");
-});
+
+ 
+//basic CRUD operations (create, read, update and delete)
+
+// var anotherTodo = new Todo({
+//     text: 'ta toget',
+//     completed: false,
+//     completedAt: 12345
+// });
+
+// anotherTodo.save().then((doc)=>{
+//     console.log(JSON.stringify(doc, undefined, 2));
+// }, (e)=>{
+//     console.log("Unable to save object todo");
+// });
+
+
+// var enUser = new User({
+//     email: "test"
+// });
+// enUser.save().then((doc)=>{
+//     console.log(JSON.stringify(doc, undefined, 2))
+// }, (e)=>{
+//     console.log("Fikk ikke lagret brukeren", e);
+// });
