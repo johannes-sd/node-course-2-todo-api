@@ -24,6 +24,7 @@ app.listen(3000, () =>{
     console.log("Startet på port 3000");
 });
 
+module.exports = {app};
 
  
 //basic CRUD operations (create, read, update and delete)
