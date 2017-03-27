@@ -7,9 +7,11 @@ const {Todo} = require("./../models/todo");
 
 
 const todos = [
-    {_id: new ObjectId, text: "first test todo"},
-    {_id: new ObjectId, text: "second test todo"}
-]
+    {   _id: new ObjectId(), 
+        text: "first test todo"},
+    {   _id: new ObjectId(), 
+        text: "second test todo"}
+];
 // testing lifesycle method
 beforeEach((done) =>{
     Todo.remove({}).then(()=>{
@@ -69,15 +71,29 @@ describe('GET /todos', () => {
     });
 });
 
-describe('GET /todos/:id', ()=>{
-    console.log(`${todos[0]._id.toHexString()}`);   
-    it('should return doc', (done)=>{
+describe('GET /todos/:id', () => {
+    console.log('/todos/' + `${todos[0]._id.toHexString()}`);   
+    it('should return doc', (done) => {
         request(app)
-            .get(`/todos/${todos[0]._id.toHexString()}`)
+            .get('/todos/' + `${todos[0]._id.toHexString()}`)
             .expect(200)
             .expect((res)=>{
-                console.log("res " + res.body.Todo);
-                expect(res.body.todos.text).toBe(todos[0].text);
+                //console.log("res " + JSON.stringify(res.body.todo, undefined, 2));
+                expect(res.body.todo.text).toBe(todos[0].text);
             }).end(done);
     });
+    it('should return a 404 if todo not found.', (done) => {
+        var fakeID = new ObjectId();
+        request(app)
+        .get('/todos/' + fakeID)
+        .expect(404)
+        .end(done);
+    });
+    it('should return a 404 if ID is not valid', (done) => {
+        request(app)
+        .get('/todos/123')
+        .expect(404)
+        .end(done);
+    });
 });
+
