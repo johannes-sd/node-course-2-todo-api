@@ -51,7 +51,31 @@ app.get('/todos/:id', (req, res)=>{
     });
 
      //error (400) request not valid - send empty body
-})
+});
+
+app.delete('/todos/:id', (req, res) => {
+    // get id
+    var id = req.params.id;
+    //valider id¨
+    if(!ObjectID.isValid(id)){
+        return res.status(404).send({});
+    }
+    // fjern todo by id
+        //success
+            //if no doc send 404
+            // if doc, send doc back with a 200
+        //error
+    Todo.findByIdAndRemove(id).then((todo) => {
+        if(!todo) {
+            return res.status(404).send({});
+        }
+        res.send({todo});
+    }).catch((e) => {
+        res.status(400).send({});
+    });
+
+
+});
 
 
 app.listen(port, () =>{
