@@ -11,7 +11,10 @@ const todos = [
     {   _id: new ObjectId(), 
         text: "first test todo"},
     {   _id: new ObjectId(), 
-        text: "second test todo"}
+        text: "second test todo",
+        completed: true,
+        completedAt: 665
+    }
 ];
 // testing lifesycle method
 beforeEach((done) =>{
@@ -132,4 +135,46 @@ describe('DELETE /todos/:id', () => {
         .end(done);
     });
 });
+describe('PATCH /todos/:id', () => {
+    it('should update the todo', (done) => {
+        //grab id from first item
+        var firstID = todos[0]._id.toHexString();
+        var text = "This should be the new text";
+        request(app)
+        .patch('/todos/' + firstID)
+        .send({
+            completed: true,
+            text
+        })
+        .expect(200)
+        .expect((res) => {
+            expect(res.body.todo.text).toBe(text);
+            expect(res.body.todo.completed).toBe(true);
+            expect(res.body.todo.completedAt).toBeA('number');
+            })
+        .end(done)
+        }); //STOP it('should update the todo', (done) => {
+    }); //STOP describe('PATCH \todos\:id', () => {
+    it('should clear completetAt when todo is not completed', (done) => {
+        var secondID = todos[1]._id.toHexString();
+        var text = 'Second documents text is hopefully now something different'
+        //update text to something different, set completed to false
+        request(app)
+        .patch('/todos/' + secondID)
+        .send({
+            text,
+            completed: false
+        })
+        .expect(200)
+        .expect((res) => {
+            expect(res.body.todo.completedAt).toNotExist()
+            expect(res.body.todo.text).toBe(text);
+            expect(res.body.todo.completed).toBe(false);
+        })
+        .end(done)
+    
+        //assertions:
+        // 200
+        // text is changed, completed = false, completedAt is null .toNotExist
+    });
 
