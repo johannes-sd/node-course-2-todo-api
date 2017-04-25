@@ -22,7 +22,7 @@ beforeEach((done) =>{
         Todo.insertMany(todos); 
     }).then(() => done());
 });
-
+$debug;
 describe('POST /todos', ()=>{
     it("should create a new todo", (done)=>{
         var text = 'testetodotekst';
