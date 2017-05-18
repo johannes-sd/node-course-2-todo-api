@@ -5,24 +5,14 @@ const {ObjectId} = require("mongodb");
 
 const {app} = require("./../server");
 const {Todo} = require("./../models/todo");
+const {todos, populateTodos, users, populateUsers} = require("./seed/seed");
 
 
-const todos = [
-    {   _id: new ObjectId(), 
-        text: "first test todo"},
-    {   _id: new ObjectId(), 
-        text: "second test todo",
-        completed: true,
-        completedAt: 665
-    }
-];
+
 // testing lifesycle method
-beforeEach((done) =>{
-    Todo.remove({}).then(()=>{
-        Todo.insertMany(todos); 
-    }).then(() => done());
-});
-$debug;
+beforeEach(populateUsers);
+beforeEach(populateTodos);
+//$debug;
 describe('POST /todos', ()=>{
     it("should create a new todo", (done)=>{
         var text = 'testetodotekst';
@@ -178,3 +168,26 @@ describe('PATCH /todos/:id', () => {
         // text is changed, completed = false, completedAt is null .toNotExist
     });
 
+describe('GET users/me', () => {
+    it('should return a user if authenticated', (done) => {
+        request(app)
+        .get('/users/me')
+        .set('x-auth', users[0].tokens[0].token)
+        .expect(200)
+        .expect((res) => {
+            expect(res.body._id).toBe(users[0]._id.toHexString());
+            expect(res.body.email).toBe(users[0].email);
+        }).end(done);
+    });
+    it('should return a 401 if not authenticated', (done) => {
+        // expect 401 and body = empty object
+        request(app)
+        .get('/users/me')
+        //.set('x-auth', users[1].tokens[0].token)
+        .expect(401)
+        .expect((res) => {
+            //expect(res.body._id).toBe(users[1]._id.toHexString());
+            expect(res.body) == {};
+        }).end(done);
+    });
+});
